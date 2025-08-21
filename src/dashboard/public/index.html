@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PulseChain Memecoin Trading PnL Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1><i class="fas fa-chart-line"></i> PulseChain Memecoin Trading PnL Tracker</h1>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">PLS Price:</span>
+                        <span id="pls-price" class="stat-value">$0.000000</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Last Update:</span>
+                        <span id="last-update" class="stat-value">Never</span>
+                    </div>
+                    <div class="stat-item">
+                        <button id="force-update-btn" class="btn btn-primary">
+                            <i class="fas fa-sync-alt"></i> Force Update
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main">
+            <!-- Summary Cards -->
+            <section class="summary-section">
+                <div class="card summary-card positive" id="total-pnl-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-line"></i> Total PnL</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="pnl-amount" id="total-pnl">+0 PLS (~$0.00)</div>
+                        <div class="pnl-percent" id="total-pnl-percent">0.00%</div>
+                    </div>
+                </div>
+
+                <div class="card summary-card positive" id="realized-pnl-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-coins"></i> Realized PnL</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="pnl-amount" id="realized-pnl">+0 PLS (~$0.00)</div>
+                    </div>
+                </div>
+
+                <div class="card summary-card" id="unrealized-pnl-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-clock"></i> Unrealized PnL</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="pnl-amount" id="unrealized-pnl">+0 PLS (~$0.00)</div>
+                    </div>
+                </div>
+
+                <div class="card summary-card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-chart-bar"></i> Trading Stats</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="stat-row">
+                            <span>Active Positions:</span>
+                            <span id="active-positions">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Total Trades:</span>
+                            <span id="total-trades">0</span>
+                        </div>
+                        <div class="stat-row">
+                            <span>Total Tokens:</span>
+                            <span id="total-tokens">0</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tabs -->
+            <section class="tabs-section">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="positions">
+                        <i class="fas fa-wallet"></i> Positions
+                    </button>
+                    <button class="tab-btn" data-tab="transactions">
+                        <i class="fas fa-exchange-alt"></i> Recent Trades
+                    </button>
+                    <button class="tab-btn" data-tab="reports">
+                        <i class="fas fa-file-alt"></i> Reports
+                    </button>
+                    <button class="tab-btn" data-tab="settings">
+                        <i class="fas fa-cog"></i> Settings
+                    </button>
+                </div>
+
+                <!-- Positions Tab -->
+                <div id="positions-tab" class="tab-content active">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-wallet"></i> Current Positions</h3>
+                            <div class="filter-controls">
+                                <select id="position-filter">
+                                    <option value="all">All Positions</option>
+                                    <option value="active">Active Only</option>
+                                    <option value="closed">Closed Only</option>
+                                    <option value="profitable">Profitable Only</option>
+                                    <option value="losing">Losing Only</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table id="positions-table" class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Token</th>
+                                            <th>Holdings</th>
+                                            <th>Avg Buy Price</th>
+                                            <th>Current Price</th>
+                                            <th>PnL</th>
+                                            <th>PnL %</th>
+                                            <th>USD Value</th>
+                                            <th>Trades</th>
+                                            <th>Hold Time</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="positions-tbody">
+                                        <tr>
+                                            <td colspan="10" class="loading">Loading positions...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transactions Tab -->
+                <div id="transactions-tab" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-exchange-alt"></i> Recent Transactions</h3>
+                            <div class="filter-controls">
+                                <select id="transaction-limit">
+                                    <option value="10">Last 10</option>
+                                    <option value="25">Last 25</option>
+                                    <option value="50" selected>Last 50</option>
+                                    <option value="100">Last 100</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="table-container">
+                                <table id="transactions-table" class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Time</th>
+                                            <th>Type</th>
+                                            <th>Token</th>
+                                            <th>Amount</th>
+                                            <th>PLS Amount</th>
+                                            <th>Price</th>
+                                            <th>USD Value</th>
+                                            <th>Tx Hash</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="transactions-tbody">
+                                        <tr>
+                                            <td colspan="8" class="loading">Loading transactions...</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Tab -->
+                <div id="reports-tab" class="tab-content">
+                    <div class="reports-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-calendar-day"></i> Daily Report</h3>
+                                <button id="generate-daily-btn" class="btn btn-secondary">
+                                    <i class="fas fa-file-export"></i> Generate
+                                </button>
+                            </div>
+                            <div class="card-content">
+                                <div id="daily-report-content">
+                                    <p>No daily report available. Click "Generate" to create one.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-calendar-week"></i> Weekly Report</h3>
+                                <button id="generate-weekly-btn" class="btn btn-secondary">
+                                    <i class="fas fa-file-export"></i> Generate
+                                </button>
+                            </div>
+                            <div class="card-content">
+                                <div id="weekly-report-content">
+                                    <p>No weekly report available. Click "Generate" to create one.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="settings-tab" class="tab-content">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3><i class="fas fa-cog"></i> System Settings</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="settings-grid">
+                                <div class="setting-item">
+                                    <label>Wallet Address:</label>
+                                    <input type="text" id="wallet-address" readonly>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Update Interval:</label>
+                                    <span id="update-interval">90 seconds</span>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Scheduler Status:</label>
+                                    <span id="scheduler-status" class="status-indicator">Unknown</span>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Next Update:</label>
+                                    <span id="next-update">Unknown</span>
+                                </div>
+                                <div class="setting-item">
+                                    <label>Total Transactions:</label>
+                                    <span id="total-transactions">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Connection Status -->
+        <div id="connection-status" class="connection-status">
+            <i class="fas fa-wifi"></i>
+            <span>Connecting...</span>
+        </div>
+
+        <!-- Notification Container -->
+        <div id="notifications" class="notifications"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
