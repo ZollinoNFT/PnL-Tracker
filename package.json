@@ -8,7 +8,10 @@
     "start": "node src/index.js",
     "dev": "nodemon src/index.js",
     "test": "jest",
-    "build": "node build.js"
+    "build": "node build.js",
+    "setup": "./setup.sh",
+    "quick-start": "./quick-start.sh",
+    "postinstall": "mkdir -p data reports/daily reports/weekly reports/summary logs"
   },
   "dependencies": {
     "web3": "^4.5.0",
