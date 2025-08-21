@@ -1,0 +1,37 @@
+{
+  "name": "pulsechain-pnl-tracker",
+  "version": "1.0.0",
+  "description": "Professional PnL tracker for memecoin trading on PulseChain",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node start.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "setup": "node scripts/setup.js",
+    "status": "node -e \"require('./src/index.js').getQuickStatus().then(console.log)\"",
+    "report": "node -e \"require('./src/index.js').generateManualReport('daily').then(() => console.log('Report generated'))\"",
+    "sync": "node -e \"require('./src/index.js').performFullSync().then(() => console.log('Sync completed'))\""
+  },
+  "keywords": ["pulsechain", "pnl", "trading", "memecoin", "crypto"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "web3": "^4.15.0",
+    "axios": "^1.6.2",
+    "node-cron": "^3.0.3",
+    "sqlite3": "^5.1.6",
+    "dotenv": "^16.3.1",
+    "winston": "^3.11.0",
+    "moment": "^2.29.4",
+    "csv-writer": "^1.6.0",
+    "pdf-lib": "^1.17.1",
+    "ethers": "^6.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
